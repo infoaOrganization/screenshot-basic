@@ -2,11 +2,10 @@ import { setHttpCallback } from '@citizenfx/http-wrapper';
 
 import { v4 } from 'uuid';
 import * as fs from 'fs';
-import * as Koa from 'koa';
-import * as Router from 'koa-router';
-import * as koaBody from 'koa-body';
-import * as mv from 'mv';
-import { File } from 'formidable';
+import Koa from 'koa';
+import Router from 'koa-router';
+import { koaBody } from 'koa-body';
+import mv from 'mv';
 
 const app = new Koa();
 const router = new Router();
@@ -35,11 +34,11 @@ router.post('/upload/:token', async (ctx) => {
             });
         }
 
-        const f = ctx.request.files['file'] as File;
+        const f = ctx.request.files['file'] as any;
 
         if (f) {
             if (upload.fileName) {
-                mv(f.path, upload.fileName, (err) => {
+                mv(f.filepath || f.path, upload.fileName, (err) => {
                     if (err) {
                         finish(err.message, null);
                         return;
@@ -48,14 +47,17 @@ router.post('/upload/:token', async (ctx) => {
                     finish(null, upload.fileName);
                 });
             } else {
-                fs.readFile(f.path, (err, data) => {
+                const filePath = f.filepath || f.path;
+                const mimeType = f.mimetype || f.type || 'image/jpeg';
+
+                fs.readFile(filePath, (err, data) => {
                     if (err) {
                         finish(err.message, null);
                         return;
                     }
 
-                    fs.unlink(f.path, (err) => {
-                        finish(null, `data:${f.type};base64,${data.toString('base64')}`);
+                    fs.unlink(filePath, (err) => {
+                        finish(null, `data:${mimeType};base64,${data.toString('base64')}`);
                     });
                 });
             }
@@ -79,7 +81,7 @@ app.use(koaBody({
 setHttpCallback(app.callback());
 
 // Cfx stuff
-const exp = (<any>global).exports;
+const exp = global.exports;
 
 exp('requestClientScreenshot', (player: string | number, options: any, cb: (err: string | boolean, data: string) => void) => {
     const tkn = v4();

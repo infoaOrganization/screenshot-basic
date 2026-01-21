@@ -20,6 +20,9 @@ module.exports = {
         }),
         new HtmlWebpackInlineSourcePlugin()
     ],
+    optimization: {
+        minimize: false
+    },
     resolve: {
         extensions: [ '.ts', '.js' ]
     },

@@ -12,6 +12,9 @@ module.exports = {
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ]
     },
+    optimization: {
+        minimize: false
+    },
 	output: {
 		filename: 'client.js',
 		path: __dirname + '/dist/'

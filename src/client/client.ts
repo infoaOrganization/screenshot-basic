@@ -1,4 +1,4 @@
-const exp = (<any>global).exports;
+const exp = global.exports;
 
 RegisterNuiCallbackType('screenshot_created');
 
