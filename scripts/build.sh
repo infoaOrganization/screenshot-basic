@@ -26,6 +26,19 @@ mkdir -p dist
 echo "Building server and client..."
 npx tsc
 
+# Flatten the directory structure (dist/client/client.js -> dist/client.js)
+if [ -f "dist/client/client.js" ]; then
+    mv dist/client/client.js dist/client.js
+    mv dist/client/client.js.map dist/client.js.map
+    rm -rf dist/client
+fi
+
+if [ -f "dist/server/server.js" ]; then
+    mv dist/server/server.js dist/server.js
+    mv dist/server/server.js.map dist/server.js.map
+    rm -rf dist/server
+fi
+
 # Build UI separately with esbuild (bundles @citizenfx/three)
 echo "Building UI..."
 npx esbuild ui/src/main.ts --bundle --sourcemap --format=esm --outfile=dist/ui.js --minify=false
