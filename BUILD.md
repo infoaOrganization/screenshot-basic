@@ -1,6 +1,9 @@
 # 빌드 가이드
 
-이 프로젝트는 webpack 없이 TypeScript 컴파일러만 사용하여 빌드합니다.
+이 프로젝트는 webpack 없이 빌드합니다:
+- Client/Server: TypeScript 컴파일러 (tsc)
+- UI: esbuild (dependencies 번들링 필요)
+
 빌드 결과물은 minify되지 않아 디버깅이 가능합니다.
 
 ## 요구사항
@@ -53,19 +56,13 @@ mise나 다른 환경에서 직접 실행하는 경우:
 # 1. 루트에서 client/server 빌드
 npx tsc
 
-# 2. UI 빌드
-cd ui
-npx tsc
-cd ..
+# 2. UI 빌드 (esbuild로 dependencies 번들링)
+npx esbuild ui/src/main.ts --bundle --sourcemap --format=esm --outfile=dist/ui.js --minify=false
 
-# 3. UI 파일 이름 변경
-move dist\main.js dist\ui.js
-move dist\main.js.map dist\ui.js.map
-
-# 4. UI HTML 복사
+# 3. UI HTML 복사
 copy ui\index.html dist\ui.html
 
-# 5. build 디렉토리 생성 및 복사
+# 4. build 디렉토리 생성 및 복사
 mkdir build
 xcopy /E /I dist build\dist
 copy fxmanifest.lua build\
@@ -75,7 +72,8 @@ copy fxmanifest.lua build\
 
 - **Minify 없음**: 코드가 압축되지 않아 읽기 쉽습니다
 - **Source Map 포함**: 디버깅을 위한 소스맵이 생성됩니다
-- **TypeScript만 사용**: webpack 없이 tsc만으로 빌드합니다
+- **빠른 빌드**: webpack 대신 tsc와 esbuild 사용
+- **UI 번들링**: @citizenfx/three 등 dependencies가 UI에 임베드됩니다
 
 ## FiveM 리소스로 사용
 

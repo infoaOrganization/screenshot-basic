@@ -26,19 +26,9 @@ mkdir -p dist
 echo "Building server and client..."
 npx tsc
 
-# Build UI separately
+# Build UI separately with esbuild (bundles @citizenfx/three)
 echo "Building UI..."
-cd ui
-npx tsc
-cd ..
-
-# Rename UI output
-if [ -f "dist/main.js" ]; then
-    mv dist/main.js dist/ui.js
-fi
-if [ -f "dist/main.js.map" ]; then
-    mv dist/main.js.map dist/ui.js.map
-fi
+npx esbuild ui/src/main.ts --bundle --sourcemap --format=esm --outfile=dist/ui.js --minify=false
 
 # Copy UI HTML to dist
 echo "Copying UI files..."
